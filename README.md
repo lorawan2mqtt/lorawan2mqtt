@@ -13,8 +13,24 @@ typed values (`temperature = 24.1 °C`), one JSON file per sensor model.
 |---|---|
 | [Codec database](codecs/) | 🟢 open for contributions |
 | Codec validator + CI | 🟢 working (`tools/validate.py`) |
+| [USB bridge](src/lorawan2mqtt/usb_bridge.py) (gateway on USB → MQTT + HA Discovery) | 🟡 early preview |
+| [Home Assistant add-on](addon/) | 🟡 early preview |
 | MQTT bridge (UDP packet forwarder → decoded MQTT + HA Discovery) | 🔜 planned |
-| Home Assistant add-on | 🔜 planned |
+
+### USB bridge — "the Zigbee dongle of LoRaWAN"
+
+Plug an [Awaro](https://awaro.fr) gateway (firmware 3.4.0+) into any machine
+over USB: it streams every decoded sensor frame as JSON lines on the serial
+port, and the bridge republishes them as MQTT + Home Assistant discovery
+entities — zero cloud, zero WiFi, zero codec configuration on the host:
+
+```bash
+pip install pyserial paho-mqtt
+python -m lorawan2mqtt.usb_bridge --port /dev/ttyUSB0 --mqtt-host 127.0.0.1
+```
+
+Early preview: developed and bench-tested against firmware 3.4.0; the
+[Home Assistant add-on packaging](addon/) is untested in container yet.
 
 ## The codec format
 
