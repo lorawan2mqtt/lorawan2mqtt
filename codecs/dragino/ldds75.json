@@ -1,0 +1,33 @@
+{
+  "vendor": "dragino",
+  "model": "LDDS75",
+  "name": "dragino-ldds75",
+  "description": "Ultrasonic distance sensor (tank level, parking): distance, battery, optional DS18B20 temperature",
+  "spec": "bat:u16@0/1000#V distance:u16@2#mm interrupt:u8@4 temp:i16@5/10#°C sensor_flag:u8@7",
+  "tests": [
+    {
+      "fport": 2,
+      "payload": "0B490B0500010501",
+      "expect": {
+        "bat": 2.889,
+        "distance": 2821,
+        "interrupt": 0,
+        "temp": 26.1,
+        "sensor_flag": 1
+      }
+    },
+    {
+      "fport": 2,
+      "payload": "0B45011801FF3F01",
+      "expect": {
+        "bat": 2.885,
+        "distance": 280,
+        "interrupt": 1,
+        "temp": -19.3,
+        "sensor_flag": 1
+      }
+    }
+  ],
+  "source": "https://github.com/dragino/dragino-end-node-decoder/blob/main/LDDS75/LDDS75_Decoder_V1.1.4.js",
+  "caveats": "1) Battery mask: the official decoder computes (bytes[0]<<8|bytes[1]) & 0x3FFF; the table spec uses plain u16. The field is KEPT because the mask never matters in real LDDS75 frames: the manual documents BAT as plain mV with no status bits (examples 0x0B45=2885mV, 0x0B49=2889mV) and the 3.6 V Li-SOCl2 supply bounds the value at ~3600 = 0x0E10, far below bit 14 (0x4000) — the mask is boilerplate carried over from other Dragino models.\n2) Distance sentinels (not filterable by the grammar): 0x0000 means \"ultrasonic sensor not detected\" (decodes as 0 mm); since firmware v1.1.4 any reading below the 280 mm minimum is transmitted as 0x0014 and decodes as 20 mm meaning \"invalid\". Valid flat-object range is 280-7500 mm.\n3) DS18B20 temp (bytes 5-6) is an optional external probe; the manual does not document the value sent when no probe is attached (other Dragino nodes emit 0x7FFF, which this spec would decode as 3276.7 °C) — treat implausible temp values as \"no probe\". Byte 7 sensor_flag refers to the ultrasonic probe (1=detected), not the DS18B20.\n4) Firmware before v1.1.3 uplinks only 4 bytes (BAT+Distance); the grammar's out-of-frame fields are simply skipped, so short frames still decode bat and distance correctly.\n5) Codec covers only the periodic/interrupt uplink on FPort 2; Dragino device-status (FPort 5) and datalog frames are intentionally not handled.\n6) interrupt and sensor_flag are unitless 0/1 numbers (no HA device class)."
+}

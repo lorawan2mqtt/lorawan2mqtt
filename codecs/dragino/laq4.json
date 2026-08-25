@@ -1,0 +1,44 @@
+{
+  "vendor": "dragino",
+  "model": "LAQ4",
+  "name": "dragino-laq4",
+  "description": "Indoor air quality sensor: TVOC, eCO2, temperature, humidity, battery",
+  "spec": "bat:u16@0/1000#V tvoc:u16@3#ppb co2:u16@5#ppm temp:i16@7/10#°C hum:u16@9/10#%",
+  "tests": [
+    {
+      "fport": 2,
+      "payload": "0CA9040000019000C60199",
+      "expect": {
+        "bat": 3.241,
+        "tvoc": 0,
+        "co2": 400,
+        "temp": 19.8,
+        "hum": 40.9
+      }
+    },
+    {
+      "fport": 2,
+      "payload": "0CAF04000701BE00C5019D",
+      "expect": {
+        "bat": 3.247,
+        "tvoc": 7,
+        "co2": 446,
+        "temp": 19.7,
+        "hum": 41.3
+      }
+    },
+    {
+      "fport": 2,
+      "payload": "0B4504000701BEFF3F0197",
+      "expect": {
+        "bat": 2.885,
+        "tvoc": 7,
+        "co2": 446,
+        "temp": -19.3,
+        "hum": 40.7
+      }
+    }
+  ],
+  "source": "https://github.com/dragino/dragino-end-node-decoder/blob/main/LAQ4/LAQ4_Decoder_TTN.txt",
+  "caveats": "1) Byte 2 (Alarm Flag & MOD) is OMITTED: it is a bitfield (bit0 = alarm flag, bits 2-6 = MOD) and the grammar has no bitmask support. 2) Layout-switch hazard: frames with MOD=31 (byte2>>2==0x31, reply to an alarm-settings poll downlink) arrive on the same FPort with the same 11-byte length but a different layout; the table would decode them as garbage sensor values. They only occur as replies to an explicit poll, never in periodic operation. 3) Sentinel: TVOC=0 and/or CO2=0 means the device is in calibration (manual notice); the grammar cannot suppress these readings. 4) The co2 field is eCO2 (equivalent CO2 computed from TVOC by the SGP30-class sensor), not a true CO2 measurement — kept as \"co2\"/ppm for HA carbon_dioxide device class, matching the official decoder's CO2_ppm name. 5) Battery is safe: full 16-bit mV, no status bits masked in the official decoders. 6) Dragino datalog and device-status frames are out of scope per instructions. 7) Vector 3 is constructed (from manual-published byte values) rather than captured, because no full negative-temperature frame is published; derivation shown step by step above."
+}

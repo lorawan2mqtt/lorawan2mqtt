@@ -1,0 +1,31 @@
+{
+  "vendor": "dragino",
+  "model": "PS-LB",
+  "name": "dragino-ps-lb",
+  "description": "4-20mA / 0-30V pressure & water-level sensor: battery, IDC loop current, VDC voltage, optional pulse count",
+  "spec": "bat:u16@0/1000#V idc_in:u16@4/1000#mA vdc_in:u16@6/1000#V pulses:u32@9",
+  "tests": [
+    {
+      "fport": 2,
+      "payload": "0B45000027AE138E00",
+      "expect": {
+        "bat": 2.885,
+        "idc_in": 10.158,
+        "vdc_in": 5.006
+      }
+    },
+    {
+      "fport": 2,
+      "payload": "0CE400031F40000000000004D2",
+      "expect": {
+        "bat": 3.3,
+        "idc_in": 8.0,
+        "vdc_in": 0.0,
+        "pulses": 1234
+      }
+    }
+  ],
+  "source": "https://raw.githubusercontent.com/dragino/dragino-end-node-decoder/main/PS-LB/PS-LB_v1.2.7_decoder.txt",
+  "contributors": [],
+  "caveats": "1) Probe_mod (bytes 2-3) omitted: the official decoder emits it as a 4-hex-digit STRING identifier (e.g. \"0003\"), not a measurement; a numeric u16 would differ from the official output.\n2) Derived quantities Water_deep_cm / Water_pressure_kPa / Differential_pressure_Pa omitted: computed by transform() with conditionals on the probe-model bytes and per-range multipliers — not expressible in the fixed-table grammar. For the water-depth probe (model 0x00, range R metres): depth_cm = (idc_in - 4.0) * R * 100 / 16, computable downstream from the exposed idc_in.\n3) Status byte (offset 8) omitted: pure bit flags (IN1/IN2/EXTI pin levels, EXTI trigger, IDC/VDC rate-of-change alarm flags) — bitmasks are not supported by the grammar.\n4) pulses (u32@9) exists only in 13-byte counting-mode frames; on the normal 9-byte frame the grammar silently skips it (offset beyond frame), which exactly matches the official decoder's length==13 conditional. No HA unit assigned (it is a raw count).\n5) Battery here is a full u16 with no status bits (unlike LHT65-family & 0x3FFF), so it is kept without a mask.\n6) Table applies to FPort 2 (official decoder's default case) only; FPort 3/5/7/8 (datalog, device status, multi-TDC) frames have different layouts and must not be fed to this codec.\n7) No sentinel values are documented for IDC/VDC in the manual; idc_in <= 4.0 mA simply means \"below range start\" (official transform clamps derived depth to 0 there).\n8) Test vectors are constructed (Dragino publishes no full FPort-2 frame); vector 1's bat/IDC/VDC bytes are the exact field-level examples from the official wiki manual, and both vectors were verified against tools/validate.py (passes) and hand-traced through the official decoder."
+}

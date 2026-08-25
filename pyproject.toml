@@ -1,0 +1,30 @@
+# Placeholder 0.0.1: locks the "lorawan2mqtt" name on PyPI while the bridge is
+# being developed. This file will grow into the real package (UDP packet
+# forwarder in -> decoded MQTT + Home Assistant discovery out).
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lorawan2mqtt"
+version = "0.0.1"
+description = "Decode LoRaWAN sensor payloads into clean MQTT / Home Assistant data. Like Zigbee2MQTT, for LoRaWAN."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.9"
+maintainers = [{ name = "Awaro" }]
+keywords = ["lorawan", "mqtt", "home-assistant", "iot", "codec", "sensors"]
+classifiers = [
+    "Development Status :: 1 - Planning",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Home Automation",
+    "Topic :: Communications",
+]
+
+[project.urls]
+Homepage = "https://lorawan2mqtt.com"
+Repository = "https://github.com/lorawan2mqtt/lorawan2mqtt"
+
+[tool.setuptools.packages.find]
+where = ["src"]

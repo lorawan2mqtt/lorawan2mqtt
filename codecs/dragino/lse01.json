@@ -1,0 +1,29 @@
+{
+  "vendor": "dragino",
+  "model": "LSE01",
+  "name": "dragino-lse01",
+  "description": "LoRaWAN soil moisture & EC sensor: soil water content, conductivity and battery (default MOD=0 uplink)",
+  "spec": "bat:u16@0/1000#V water_SOIL:u16@4/100#% conduct_SOIL:u16@8#µS/cm",
+  "tests": [
+    {
+      "fport": 2,
+      "payload": "0B45000005DC010500C800",
+      "expect": {
+        "bat": 2.885,
+        "water_SOIL": 15.0,
+        "conduct_SOIL": 200
+      }
+    },
+    {
+      "fport": 2,
+      "payload": "0B4900001194FF7E032000",
+      "expect": {
+        "bat": 2.889,
+        "water_SOIL": 45.0,
+        "conduct_SOIL": 800
+      }
+    }
+  ],
+  "source": "https://raw.githubusercontent.com/dragino/dragino-end-node-decoder/main/LSE01/LSE01_TTN%20Decoder%20V1.2.1.txt",
+  "caveats": "1) Soil temperature (bytes 6-7) OMITTED: every official source (manual and all 4 decoder versions incl. ChirpStackV4 V1.2.1 and the TTN device repository) decodes negatives as (raw-0xFFFF)/100, which differs from two's-complement i16 (raw-0x10000)/100 by exactly 0.01 °C on every negative reading (manual example FF7E: official -1.29 vs i16 -1.30). Sub-zero soil temps occur in real deployments, so the table grammar cannot reproduce the official output; per the exactness rule the field was dropped rather than shipped 0.01 °C off. 2) Bytes 2-3 OMITTED: documented as \"Temperature (Reserve) — Ignore now\" in the current manual; the official decoder still emits temp_DS18B20 from them (proper i16, /10), but including a reserved field would create a phantom 0.0 °C HA temperature entity (TTN screenshot shows TempC_DS18B20: 0.0). 3) Byte 10 OMITTED: bitmask-only flags (MOD = bit7, s_flag = bit4, i_flag = low nibble) — not expressible. 4) The codec assumes the default MOD=0 layout; if the user sets MOD=1 (raw/dielectric mode, bit7 of byte 10 set), bytes 4-9 change meaning and this codec silently misdecodes — layout switching is not expressible in the grammar. 5) Battery kept WITHOUT the decoder's & 0x3FFF mask: the LSE01 manual documents plain hex→mV (Ex 0x0B45 = 2885 mV) and defines no status bits in bits 14-15 (unlike LHT65); with a Li-SOCl2 supply ≤ ~3.6 V the raw value never reaches bit 14, so u16 and the masked value are identical in real frames. 6) Test vectors are assembled from the manual's per-field official examples, not captured over the air — no complete example frame is published; validate.py was actually executed on the file (passes)."
+}
