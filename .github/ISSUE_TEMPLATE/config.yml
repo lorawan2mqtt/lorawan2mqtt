@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Awaro gateway (hardware)
+    url: https://awaro.fr
+    about: Questions about the Awaro gateway itself (the hardware product).

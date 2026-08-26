@@ -64,6 +64,12 @@ Payload `00F1480BB8` decodes to `temp = 24.1 °C`, `hum = 72 %`, `bat = 3.0 V`.
 - Please capture **real frames** — a test vector fabricated from the datasheet often
   hides an endianness or offset mistake.
 
+## Requesting a decoder
+
+Model not covered and you'd rather not write the file yourself?
+[Open a decoder request](https://github.com/lorawan2mqtt/lorawan2mqtt/issues/new?template=decoder-request.yml)
+with the vendor's payload documentation and a couple of captured frames.
+
 ## Validating locally
 
 ```

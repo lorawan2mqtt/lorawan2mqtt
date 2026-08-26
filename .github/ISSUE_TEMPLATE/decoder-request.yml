@@ -1,0 +1,68 @@
+name: "📡 Decoder request"
+description: "Ask for a new sensor decoder (codec table or built-in)"
+title: "[decoder] vendor model"
+labels: ["decoder-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping the codec database grow! The more fields you can
+        fill, the faster the decoder ships — **captured payloads with their
+        expected values are the single most useful thing** you can provide.
+  - type: input
+    id: vendor
+    attributes:
+      label: Vendor
+      placeholder: "Dragino, Milesight, Elsys, Netvox, ..."
+    validations:
+      required: true
+  - type: input
+    id: model
+    attributes:
+      label: Model
+      placeholder: "LHT65N, EM300-TH, ..."
+    validations:
+      required: true
+  - type: input
+    id: docs
+    attributes:
+      label: Payload documentation / official decoder
+      description: Link to the vendor's payload-format page, user manual, or official JS decoder.
+      placeholder: "https://..."
+    validations:
+      required: true
+  - type: textarea
+    id: payloads
+    attributes:
+      label: Captured payloads (hex) with the values they should decode to
+      description: >
+        Copy real frames from your gateway or console (Awaro: the
+        "Recent packets" page shows the hex), and say what the sensor was
+        actually reading at that moment. One per line.
+      placeholder: |
+        01756403673401046865  ->  battery 100 %, temperature 30.8 °C, humidity 50.5 %
+        0175640367F800046832  ->  battery 100 %, temperature -0.8 °C, humidity 25 %
+  - type: input
+    id: fport
+    attributes:
+      label: FPort of the data uplinks (if you know)
+      placeholder: "2"
+  - type: dropdown
+    id: layout
+    attributes:
+      label: Frame layout (if you know)
+      options:
+        - "Fixed layout (same fields at the same bytes in every frame)"
+        - "Variable / TLV (fields depend on what the sensor reports)"
+        - "I don't know"
+      default: 2
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Before submitting
+      options:
+        - label: >
+            I checked the
+            [codec database](https://github.com/lorawan2mqtt/lorawan2mqtt/tree/main/codecs)
+            and the built-in decoder list — this model is not covered yet.
+          required: true

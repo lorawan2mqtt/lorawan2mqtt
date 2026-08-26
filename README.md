@@ -66,6 +66,10 @@ Contributing a codec makes your sensor work everywhere at once.
 
 No build environment needed — a codec is just a JSON file.
 
+Not comfortable writing it yourself? **[Open a decoder request](https://github.com/lorawan2mqtt/lorawan2mqtt/issues/new?template=decoder-request.yml)** —
+a link to the vendor's payload documentation plus a couple of captured frames
+with their expected values is all we need.
+
 ## Maintained by Awaro
 
 This project is maintained by the team behind **[Awaro](https://awaro.fr)** — a plug-and-play
