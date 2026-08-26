@@ -1,13 +1,13 @@
-# Placeholder 0.0.1: locks the "lorawan2mqtt" name on PyPI while the bridge is
-# being developed. This file will grow into the real package (UDP packet
-# forwarder in -> decoded MQTT + Home Assistant discovery out).
+# Early preview of the bridge: the USB bridge (gateway on USB -> MQTT + Home
+# Assistant discovery) ships and runs; the UDP packet-forwarder bridge will
+# join it here as the project matures.
 [build-system]
 requires = ["setuptools>=61"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "lorawan2mqtt"
-version = "0.0.1"
+version = "0.0.2"
 description = "Decode LoRaWAN sensor payloads into clean MQTT / Home Assistant data. Like Zigbee2MQTT, for LoRaWAN."
 readme = "README.md"
 license = { text = "MIT" }
@@ -15,12 +15,19 @@ requires-python = ">=3.9"
 maintainers = [{ name = "Awaro" }]
 keywords = ["lorawan", "mqtt", "home-assistant", "iot", "codec", "sensors"]
 classifiers = [
-    "Development Status :: 1 - Planning",
+    "Development Status :: 3 - Alpha",
     "License :: OSI Approved :: MIT License",
     "Programming Language :: Python :: 3",
     "Topic :: Home Automation",
     "Topic :: Communications",
 ]
+dependencies = [
+    "pyserial>=3.4",
+    "paho-mqtt>=1.6",
+]
+
+[project.scripts]
+lorawan2mqtt = "lorawan2mqtt.usb_bridge:main"
 
 [project.urls]
 Homepage = "https://lorawan2mqtt.com"
